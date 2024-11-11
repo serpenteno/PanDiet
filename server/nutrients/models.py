@@ -1,3 +1,18 @@
 from django.db import models
 
-# Create your models here.
+
+class Nutrient(models.Model):
+    UNIT_CHOICES = [
+        ('g', 'Gram'),
+        ('mg', 'Milligram'),
+        ('mcg', 'Microgram'),
+        ('kg', 'Kilogram'),
+        ('ml', 'Milliliter'),
+        ('l', 'Liter'),
+    ]
+
+    name = models.CharField(max_length=100, unique=True)
+    unit = models.CharField(max_length=10, choices=UNIT_CHOICES)
+
+    def __str__(self):
+        return f"{self.name} ({self.get_unit_display()})"
