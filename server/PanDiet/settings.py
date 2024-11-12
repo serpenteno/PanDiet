@@ -42,6 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'nutrients',
+    'products',
+    'diet_plan',
+    'users',
+    'user_metrics',
+    'common'
 ]
 
 MIDDLEWARE = [

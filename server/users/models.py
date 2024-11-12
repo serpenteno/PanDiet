@@ -44,7 +44,6 @@ class User(AbstractBaseUser):
         return self.role == 'admin'
 
     def clean(self):
-        # Sprawdzamy, czy role są poprawne
         if self.role not in dict(self.ROLE_CHOICES):
             raise ValidationError("Invalid role")
 

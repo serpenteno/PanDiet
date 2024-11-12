@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Tags(models.IntegerChoices):
     SALT = 1
     SUGAR = 2
@@ -11,7 +12,7 @@ class Tags(models.IntegerChoices):
     EGGS = 128
     NUTS = 256
     PEANUTS = 512
-    SEASAME = 1024
+    SESAME = 1024
     SOYBEANS = 2048
     CELERY = 4096
     MUSTARD = 8192

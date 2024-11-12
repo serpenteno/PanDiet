@@ -12,11 +12,10 @@ class DietPlan(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     tags = models.IntegerField(choices=Tags.choices, default=0)
-    author = models.ForeignKey("users.User", on_delete=models.SET_NULL)
+    author = models.ForeignKey("users.User", on_delete=models.SET_NULL, null=True)
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
 
     def clean(self):
-        # Sprawdzamy, czy widocznoœæ jest poprawna
         if self.visibility not in dict(self.VISIBILITY_CHOICES):
             raise ValidationError("Invalid visibility")
 
