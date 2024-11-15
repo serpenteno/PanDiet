@@ -1,5 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from users.models import User
+from products.models import Product
 from common.models import Tags
 
 
@@ -13,8 +15,10 @@ class Meal(models.Model):
     description = models.TextField(blank=True)
     mass = models.DecimalField(max_digits=5, decimal_places=2)
     tags = models.IntegerField(choices=Tags.choices, default=0)
-    author = models.ForeignKey('users.User', on_delete=models.SET_NULL)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
+    
+    products = models.ManyToManyField(Product, through='MealProducts')
 
     def __str__(self):
         return f"{self.name} added by {self.author} ({self.visibility})"
@@ -39,3 +43,11 @@ class Meal(models.Model):
     def has_tag(self, tag):
         """ Checks if the tag is set """
         return (self.tags & tag) != 0
+
+
+class MealProducts(models.Model):
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"{self.meal.name} - {self.product.name}"
