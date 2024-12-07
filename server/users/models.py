@@ -25,20 +25,24 @@ class User(AbstractBaseUser):
         ('admin', 'Admin'),
     ]
 
+    username = models.CharField(max_length=30, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     diet_plan = models.ForeignKey('diet_plan.DietPlan', on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['email', 'role']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['username', 'role']
 
     objects = UserManager()
 
     def __str__(self):
-        return f"{self.email} ({self.get_role_display()})"
+        return f"{self.username} ({self.role})"
 
     def is_admin(self):
         return self.role == 'admin'
@@ -46,6 +50,19 @@ class User(AbstractBaseUser):
     def clean(self):
         if self.role not in dict(self.ROLE_CHOICES):
             raise ValidationError("Invalid role")
+
+    def has_perm(self, perm, obj=None):
+        return self.is_active
+
+    def has_module_perms(self, app_label):
+        return self.is_active
+
+    def save(self, *args, **kwargs):
+        if not self.is_staff:
+            self.is_staff = self.role == 'admin'
+        if not self.is_superuser:
+            self.is_superuser = self.role == 'admin'
+        super().save(*args, **kwargs)
 
 
 class DietitianClient(models.Model):

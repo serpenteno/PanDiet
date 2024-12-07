@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Tags(models.IntegerChoices):
+    NO_TAGS = 0
     SALT = 1
     SUGAR = 2
     FAT = 4

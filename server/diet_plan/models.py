@@ -35,6 +35,7 @@ class DietPlan(models.Model):
         """ Checks if the tag is set """
         return (self.tags & tag) != 0
 
+
 class DietPlanMeals(models.Model):
     DAY_NUMBER = [
         ('1', 'Monday'),
@@ -48,7 +49,9 @@ class DietPlanMeals(models.Model):
 
     DAY_TIME = [
         ('breakfast', 'Breakfast'),
+        ('a.m. snack', 'A.M. Snack'),
         ('lunch', 'Lunch'),
+        ('p.m. snack', 'P.M. Snack'),
         ('dinner', 'Dinner')
     ]
 

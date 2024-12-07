@@ -14,16 +14,16 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     mass = models.DecimalField(max_digits=5, decimal_places=2)
     tags = models.IntegerField(choices=Tags.choices, default=0)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
 
-    nutrients = models.ManyToManyField(Nutrient, through='ProductNutrients')
+    nutrients = models.ManyToManyField(Nutrient, through='ProductNutrient')
 
     def __str__(self):
         return f"{self.name} by {self.author} ({self.visibility})"
 
 
-class ProductNutrients(models.Model):
+class ProductNutrient(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     nutrient = models.ForeignKey(Nutrient, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=5, decimal_places=2)

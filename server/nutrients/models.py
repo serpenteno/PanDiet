@@ -15,4 +15,4 @@ class Nutrient(models.Model):
     unit = models.CharField(max_length=10, choices=UNIT_CHOICES)
 
     def __str__(self):
-        return f"{self.name} ({self.get_unit_display()})"
+        return f"{self.name} ({self.unit})"
