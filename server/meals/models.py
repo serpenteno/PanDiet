@@ -13,6 +13,7 @@ class Meal(models.Model):
 
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
+    recipe = models.TextField(blank=True)
     mass = models.DecimalField(max_digits=5, decimal_places=2)
     tags = models.IntegerField(choices=Tags.choices, default=0)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -25,7 +26,7 @@ class Meal(models.Model):
 
     def clean(self):
         # Sprawdzamy, czy masa jest wiêksza od zera
-        if self.masss <= 0:
+        if self.mass <= 0:
             raise ValidationError("Mass must be a positive value")
 
         # Sprawdzamy, czy widocznoœæ jest poprawna
