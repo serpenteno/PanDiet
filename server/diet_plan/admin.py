@@ -9,16 +9,16 @@ class DietPlanMealsInLine(admin.TabularInline):
 @admin.register(DietPlan)
 class DietPlanAdmin(admin.ModelAdmin):
     # Columns to show in admin view
-    list_display = ('name', 'description', 'get_meals', 'tags', 'author', 'visibility')
+    list_display = ('name', 'description', 'get_meals', 'author', 'visibility')
 
     # Fields that are searchable
-    search_fields = ('name', 'tags', 'author', 'visibility', 'meals__name')
+    search_fields = ('name', 'author', 'visibility', 'meals__name')
 
     # Fields that can be filtered
-    list_filter = ('tags', 'author', 'visibility')
+    list_filter = ('author', 'visibility')
 
     # Fields that can be edited during add or put operations
-    fields = ('name', 'description', 'tags', 'author', 'visibility')
+    fields = ('name', 'description', 'author', 'visibility')
 
     # Add values that are in many to many relation
     inlines = [DietPlanMealsInLine]

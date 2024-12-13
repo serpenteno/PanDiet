@@ -16,7 +16,7 @@ class MealSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Meal
-        fields = ['id', 'name', 'description', 'recipe', 'mass', 'tags', 'author', 'visibility', 'products']
+        fields = ['id', 'name', 'description', 'recipe', 'mass', 'author', 'visibility', 'products']
         read_only_fields = ['id', 'author']
 
     def create(self, validated_data):

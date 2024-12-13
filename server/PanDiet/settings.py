@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'diet_plan',
     'users',
     'user_metrics',
-    'common'
+    'common',
+    'tags'
 ]
 
 MIDDLEWARE = [

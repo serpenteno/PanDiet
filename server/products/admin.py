@@ -10,16 +10,16 @@ class ProductNutrientInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     # Columns to show in admin view
-    list_display = ('name', 'description', 'get_nutrients', 'mass', 'tags', 'author', 'visibility')
+    list_display = ('name', 'description', 'get_nutrients', 'mass', 'author', 'visibility')
 
     # Fields that are searchable
-    search_fields = ('name', 'tags', 'mass', 'author', 'visibility', 'nutrients__name')
+    search_fields = ('name', 'mass', 'author', 'visibility', 'nutrients__name')
 
     # Fields that can be filtered
-    list_filter = ('tags', 'author', 'visibility')
+    list_filter = ('author', 'visibility')
 
     # Fields that can be edited during add or put operations
-    fields = ('name', 'description', 'mass', 'tags', 'author', 'visibility')
+    fields = ('name', 'description', 'mass', 'author', 'visibility')
 
     # Add values that are in many to many relation
     inlines = [ProductNutrientInline]

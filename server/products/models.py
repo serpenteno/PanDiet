@@ -1,7 +1,6 @@
 from django.db import models
 from nutrients.models import Nutrient
 from users.models import User
-from common.models import Tags
 
 
 class Product(models.Model):
@@ -13,7 +12,6 @@ class Product(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     mass = models.DecimalField(max_digits=5, decimal_places=2)
-    tags = models.IntegerField(choices=Tags.choices, default=0)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
 

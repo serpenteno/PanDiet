@@ -25,10 +25,10 @@ class DietPlanViewSet(ModelViewSet):
     ]
 
     # Filter
-    filterset_fields = ['tags', 'author', 'visibility', 'meals']
+    filterset_fields = ['author', 'visibility', 'meals']
 
     # Search
-    search_fields = ['name', 'tags', 'author', 'meals']
+    search_fields = ['name', 'author', 'meals']
 
     # Sort
     ordering_fields = ['name']

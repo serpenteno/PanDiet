@@ -25,10 +25,10 @@ class ProductViewSet(ModelViewSet):
     ]
 
     # Filter
-    filterset_fields = ['tags', 'author', 'visibility', 'nutrients']
+    filterset_fields = ['author', 'visibility', 'nutrients']
 
     # Search
-    search_fields = ['name', 'tags', 'mass', 'author', 'nutrients']
+    search_fields = ['name', 'mass', 'author', 'nutrients']
 
     # Sort
     ordering_fields = ['name', 'mass']
