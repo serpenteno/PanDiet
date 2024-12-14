@@ -12,7 +12,7 @@ class DietPlan(models.Model):
 
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
 
     meals = models.ManyToManyField(Meal, through='DietPlanMeals')

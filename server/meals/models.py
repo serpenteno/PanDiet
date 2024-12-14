@@ -14,7 +14,7 @@ class Meal(models.Model):
     description = models.TextField(blank=True)
     recipe = models.TextField(blank=True)
     mass = models.DecimalField(max_digits=5, decimal_places=2)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
     
     products = models.ManyToManyField(Product, through='MealProducts')

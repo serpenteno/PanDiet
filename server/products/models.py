@@ -1,6 +1,7 @@
 from django.db import models
 from nutrients.models import Nutrient
 from users.models import User
+from tags.models import Tag
 
 
 class Product(models.Model):
@@ -16,6 +17,7 @@ class Product(models.Model):
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
 
     nutrients = models.ManyToManyField(Nutrient, through='ProductNutrient')
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return f"{self.name} by {self.author} ({self.visibility})"
