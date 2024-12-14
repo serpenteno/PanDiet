@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from users.models import User
 from meals.models import Meal
+from tags.models import Tag
 
 
 class DietPlan(models.Model):
@@ -16,10 +17,24 @@ class DietPlan(models.Model):
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
 
     meals = models.ManyToManyField(Meal, through='DietPlanMeals')
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def clean(self):
         if self.visibility not in dict(self.VISIBILITY_CHOICES):
             raise ValidationError("Invalid visibility")
+
+    def update_dietplan_tags(self):
+        inherited_tags = set()
+
+        for meal in self.meals.all():
+            for tag in meal.tags.all():
+                if tag.inheritance_AND_logic:
+                    if all(tag in meal.tags.all() for meal in self.meals.all()):
+                        inherited_tags.add(tag)
+                else:
+                    inherited_tags.add(tag)
+
+        self.tags.set(inherited_tags)
 
 
 class DietPlanMeals(models.Model):
