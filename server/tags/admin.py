@@ -14,3 +14,4 @@ class TagAdmin(admin.ModelAdmin):
 
     # Fields that can be edited during add or put operations
     fields = ('name', 'inheritance_AND_logic')
+

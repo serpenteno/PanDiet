@@ -1,7 +1,10 @@
+from itertools import product
+from math import prod
 from django.core.exceptions import ValidationError
 from django.db import models
 from users.models import User
 from products.models import Product
+from tags.models import Tag
 
 
 class Meal(models.Model):
@@ -18,6 +21,7 @@ class Meal(models.Model):
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
     
     products = models.ManyToManyField(Product, through='MealProducts')
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return f"{self.name} added by {self.author} ({self.visibility})"
@@ -30,6 +34,19 @@ class Meal(models.Model):
         # Sprawdzamy, czy widocznoœæ jest poprawna
         if self.visibility not in dict(self.VISIBILITY_CHOICES):
             raise ValidationError("Invalid visibility")
+
+    def update_meal_tags(self):
+        inherited_tags = set()
+
+        for product in self.products.all():
+            for tag in product.tags.all():
+                if tag.inheritance_AND_logic:
+                    if all(tag in product.tags.all() for product in self.products.all()):
+                        inherited_tags.add(tag)
+                else:
+                    inherited_tags.add(tag)
+
+        self.tags.set(inherited_tags)
 
 
 class MealProducts(models.Model):

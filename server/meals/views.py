@@ -25,10 +25,11 @@ class MealViewSet(ModelViewSet):
     ]
 
     # Filter
-    filterset_fields = ['author', 'visibility', 'products']
+    filterset_fields = ['author', 'visibility', 'products', 'tags']
 
     # Search
-    search_fields = ['name', 'mass', 'author', 'products']
+    search_fields = ['name', 'mass', 'author', 'products', 'tags']
 
     # Sort
     ordering_fields = ['name', 'mass']
+
