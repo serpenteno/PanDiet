@@ -23,5 +23,6 @@ urlpatterns = [
     path('api/products/', include('products.urls')),
     path('api/meals/', include('meals.urls')),
     path('api/dietplans/', include('diet_plan.urls')),
-    path('api/users/', include('users.urls'))
+    path('api/users/', include('users.urls')),
+    path('api/token/', include('common.token_url'))
 ]

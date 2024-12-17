@@ -50,12 +50,12 @@ class NutrientViewSet(ModelViewSet):
         # In other cases, no access
         return Nutrient.objects.none()
 
-    def perform_update(self, serializer):
+    def perform_update(self, instance):
         # Check if the user has permission to edit the object
         obj = self.get_object()
         if obj.author != self.request.user and self.request.user.role != 'admin':
             raise PermissionDenied("You don't have permission to edit this object.")
-        serializer.save()
+        instance.save()
 
     def perform_destroy(self, instance):
         # Check if the user has permission to delete the object
@@ -64,28 +64,7 @@ class NutrientViewSet(ModelViewSet):
             raise PermissionDenied("You don't have permission to delete this object.")
         instance.delete()
 
+    def perform_create(self, instance):
+        # Add author to the object
+        instance.save(author=self.request.user)
 
-class NutrientViewSet(ModelViewSet):
-    """
-    API endpoint for Nutrient table (add, edit, remove, list).
-    """
-    queryset = Nutrient.objects.all()
-    serializer_class = NutrientSerializer
-    # Set permissions to API
-    permission_classes = [AllowAny]
-
-    # Filters and search
-    filter_backends = [
-        DjangoFilterBackend,  # Handle filter
-        SearchFilter,         # Handle search
-        OrderingFilter        # Handle sort
-    ]
-
-    # Filter
-    filterset_fields = ['unit']  # User can filter by 'unit' field
-
-    # Search
-    search_fields = ['name']  # User can search by `name` field
-
-    # Sort
-    ordering_fields = ['name', 'unit']  # User can order by 'unit' or 'name' fields

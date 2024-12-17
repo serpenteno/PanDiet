@@ -1,7 +1,12 @@
-from rest_framework.authtoken.views import obtain_auth_token
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import UserViewSet, DietitianClientViewSet
+
+router = DefaultRouter()
+router.register(r'list', UserViewSet, basename='users')
+router.register(r'dietitian-clients', DietitianClientViewSet, basename='dietitian-clients')
 
 urlpatterns = [
-    path('token', obtain_auth_token, name='api_token_auth'),
+    path('', include(router.urls)),
 ]
 

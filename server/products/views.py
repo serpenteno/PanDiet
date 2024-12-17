@@ -56,12 +56,12 @@ class ProductViewSet(ModelViewSet):
         # In other cases, no access
         return Product.objects.none()
 
-    def perform_update(self, serializer):
+    def perform_update(self, instance):
         # Check if the user has permission to edit the object
         obj = self.get_object()
         if obj.author != self.request.user and self.request.user.role != 'admin':
             raise PermissionDenied("You don't have permission to edit this object.")
-        serializer.save()
+        instance.save()
 
     def perform_destroy(self, instance):
         # Check if the user has permission to delete the object
@@ -69,3 +69,7 @@ class ProductViewSet(ModelViewSet):
         if obj.author != self.request.user and self.request.user.role != 'admin':
             raise PermissionDenied("You don't have permission to delete this object.")
         instance.delete()
+
+    def perform_create(self, instance):
+        # Add author to the object
+        instance.save(author=self.request.user)
