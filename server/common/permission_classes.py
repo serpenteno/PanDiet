@@ -52,3 +52,26 @@ class IsAdminOrDietitianOrClient(BasePermission):
             else:
                 return False
         return False
+
+
+# Custom permission class for checking if user can display object
+class UsersEdit(BasePermission):
+    def has_permission(self, request, view):
+        # Is user logged?
+        if not request.user or not request.user.is_authenticated:
+            return False
+        # Is user an admin or dietitian or client
+        return request.user.role in ['admin', 'dietitian']
+
+    def has_object_permission(self, request, view, obj):
+        # Admin full permissions
+        if request.user.role == 'admin':
+            return True
+        # Dietitian cannot view other roles at his rank or higher
+        if request.user.role == 'dietitian':
+            if obj.role in ['admin', 'dietitian']:
+                return False
+            return True
+        # Client cannot view users
+        if request.user.role == 'client':
+            return False

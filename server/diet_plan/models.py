@@ -19,10 +19,6 @@ class DietPlan(models.Model):
     meals = models.ManyToManyField(Meal, through='DietPlanMeals')
     tags = models.ManyToManyField(Tag, null=True, blank=True)
 
-    def clean(self):
-        if self.visibility not in dict(self.VISIBILITY_CHOICES):
-            raise ValidationError("Invalid visibility")
-
     def update_dietplan_tags(self):
         inherited_tags = set()
 

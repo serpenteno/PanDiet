@@ -26,15 +26,6 @@ class Meal(models.Model):
     def __str__(self):
         return f"{self.name} added by {self.author} ({self.visibility})"
 
-    def clean(self):
-        # Sprawdzamy, czy masa jest wi�ksza od zera
-        if self.mass <= 0:
-            raise ValidationError("Mass must be a positive value")
-
-        # Sprawdzamy, czy widoczno�� jest poprawna
-        if self.visibility not in dict(self.VISIBILITY_CHOICES):
-            raise ValidationError("Invalid visibility")
-
     def update_meal_tags(self):
         inherited_tags = set()
 

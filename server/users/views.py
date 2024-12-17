@@ -3,7 +3,7 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import User, DietitianClient
 from .serializers import UserSerializer, DietitianClientSerializer
-from common.permission_classes import IsAdminOrDietitian
+from common.permission_classes import IsAdminOrDietitian, UsersEdit
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -11,7 +11,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
     # Set permissions to API
-    permission_classes = [IsAdminOrDietitian]
+    permission_classes = [UsersEdit]
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['role', 'is_active']
@@ -29,7 +29,7 @@ class DietitianClientViewSet(viewsets.ModelViewSet):
     queryset = DietitianClient.objects.all()
 
     # Set permissions to API
-    permission_classes = [IsAdminOrDietitian]
+    permission_classes = [UsersEdit]
 
     serializer_class = DietitianClientSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
