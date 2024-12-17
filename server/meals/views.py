@@ -5,7 +5,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Meal
 from .serializers import MealSerializer
-from common.permission_classes import IsAdminOrDietitian
+from common.permission_classes import IsAdminOrDietitian, IsAdminOrDietitianOrClient
 
 
 class MealViewSet(ModelViewSet):
@@ -13,7 +13,7 @@ class MealViewSet(ModelViewSet):
     API endpoint for Meal table (add, edit, remove, list).
     """
     serializer_class = MealSerializer
-    permission_classes = [IsAdminOrDietitian]
+    permission_classes = [IsAdminOrDietitianOrClient]
 
     # Filters and search
     filter_backends = [
@@ -42,6 +42,11 @@ class MealViewSet(ModelViewSet):
         if user.role == 'dietitian':
             return Meal.objects.filter(
                 Q(author=user) | Q(visibility='public')
+            )
+
+        if user.role == 'client':
+            return Meal.objects.filter(
+                Q(id__in=user.diet_plan.meals.values_list('id', flat=True))
             )
 
         # In other cases, no access

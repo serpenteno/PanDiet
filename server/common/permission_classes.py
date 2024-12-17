@@ -1,4 +1,5 @@
 from rest_framework.permissions import BasePermission
+from products.models import Product
 
 
 # Custom permission class for checking if user can display object
@@ -44,7 +45,9 @@ class IsAdminOrDietitianOrClient(BasePermission):
             return obj.visibility == 'public'
         # Client can view his diet_plan
         if request.user.role == 'client':
-            if request.user.diet_plan == obj:
+            if request.user.diet_plan == obj or obj in request.user.diet_plan.meals.all():
+                return True
+            elif obj in Product.objects.filter(meal__in=request.user.diet_plan.meals.all()):
                 return True
             else:
                 return False

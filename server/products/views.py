@@ -7,7 +7,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product
 from .serializers import ProductSerializer
-from common.permission_classes import IsAdminOrDietitian
+from common.permission_classes import IsAdminOrDietitian, IsAdminOrDietitianOrClient
 
 
 class ProductViewSet(ModelViewSet):
@@ -17,7 +17,7 @@ class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
 
     # Set permissions to API
-    permission_classes = [IsAdminOrDietitian]
+    permission_classes = [IsAdminOrDietitianOrClient]
 
     # Filters and search
     filter_backends = [
@@ -46,6 +46,11 @@ class ProductViewSet(ModelViewSet):
         if user.role == 'dietitian':
             return Product.objects.filter(
                 Q(author=user) | Q(visibility='public')
+            )
+
+        if user.role == 'client':
+            return Product.objects.filter(
+                id__in=user.diet_plan.meals.all().prefetch_related('products').values_list('products__id', flat=True)
             )
 
         # In other cases, no access
