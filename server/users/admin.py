@@ -4,20 +4,27 @@ from .models import User
 
 
 class UserAdmin(DefaultUserAdmin):
-    list_display = ('email', 'first_name', 'last_name', 'role', 'is_staff', 'is_active', 'is_admin')
-    list_filter = ('role', 'is_staff', 'is_active')
-    search_fields = ('email', 'first_name', 'last_name', 'role')
-    ordering = ('email',)
+    list_display = ('email', 'username', 'first_name', 'last_name', 'role', 'is_active', 'is_staff', 'is_superuser')
+    list_filter = ('role', 'is_active', 'is_staff', 'is_superuser')
+    search_fields = ('email', 'username', 'first_name', 'last_name')
+    ordering = ('username','email')
 
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('email', 'username', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'role', 'diet_plan')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_admin')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
         ('Important dates', {'fields': ('last_login',)}),
     )
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'role', 'first_name', 'last_name', 'diet_plan', 'is_staff', 'is_active')}
-        ),
+            'fields': (
+            'email', 'username', 'password1', 'password2', 'role', 'first_name', 'last_name', 'is_active', 'is_staff',
+            'is_superuser')}
+         ),
     )
+
+    filter_horizontal = ()
+
+admin.site.register(User, UserAdmin)

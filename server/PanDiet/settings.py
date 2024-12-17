@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
     'nutrients',
     'products',
@@ -65,6 +66,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'PanDiet.urls'
+
+AUTH_USER_MODEL = 'users.User'
 
 TEMPLATES = [
     {
@@ -152,5 +155,8 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',  # To jest kluczowe dla Browsable API
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
     ],
 }

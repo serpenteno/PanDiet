@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.exceptions import ValidationError
@@ -15,6 +16,8 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('role', 'admin')
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
 
@@ -30,22 +33,19 @@ class User(AbstractBaseUser):
     password = models.CharField(max_length=128)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='client')
     diet_plan = models.ForeignKey('diet_plan.DietPlan', on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['username', 'role']
+    REQUIRED_FIELDS = ['role', 'email']  # Add 'email' here, since it's required for the user creation.
 
     objects = UserManager()
 
     def __str__(self):
         return f"{self.username} ({self.role})"
-
-    def is_admin(self):
-        return self.role == 'admin'
 
     def clean(self):
         if self.role not in dict(self.ROLE_CHOICES):
@@ -58,10 +58,12 @@ class User(AbstractBaseUser):
         return self.is_active
 
     def save(self, *args, **kwargs):
+        # Ensure correct role permissions
         if not self.is_staff:
             self.is_staff = self.role == 'admin'
         if not self.is_superuser:
             self.is_superuser = self.role == 'admin'
+
         super().save(*args, **kwargs)
 
 
@@ -83,3 +85,5 @@ class DietitianClient(models.Model):
 
     class Meta:
         unique_together = ('dietitian', 'client')
+        verbose_name = 'Dietitian-Client Relationship'
+        verbose_name_plural = 'Dietitian-Client Relationships'
