@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Meal, MealProducts
 
+
 class MealProductsInLine(admin.TabularInline):
     model = MealProducts
     extra = 1

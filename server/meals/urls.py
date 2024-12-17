@@ -4,7 +4,7 @@ from .views import MealViewSet
 
 
 router = DefaultRouter()
-router.register(r'meals', MealViewSet, basename='meal')
+router.register(r'', MealViewSet, basename='meal')
 
 urlpatterns = [
     path('', include(router.urls)),

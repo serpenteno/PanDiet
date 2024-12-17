@@ -17,7 +17,7 @@ class Product(models.Model):
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
 
     nutrients = models.ManyToManyField(Nutrient, through='ProductNutrient')
-    tags = models.ManyToManyField(Tag, blank=True)
+    tags = models.ManyToManyField(Tag, null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} by {self.author} ({self.visibility})"

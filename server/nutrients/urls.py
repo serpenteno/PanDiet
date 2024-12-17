@@ -4,7 +4,7 @@ from .views import NutrientViewSet
 
 
 router = DefaultRouter()
-router.register(r'nutrients', NutrientViewSet, basename='nutrient')
+router.register(r'', NutrientViewSet, basename='nutrient')
 
 urlpatterns = [
     path('', include(router.urls)),

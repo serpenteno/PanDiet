@@ -17,7 +17,7 @@ class DietPlan(models.Model):
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
 
     meals = models.ManyToManyField(Meal, through='DietPlanMeals')
-    tags = models.ManyToManyField(Tag, blank=True)
+    tags = models.ManyToManyField(Tag, null=True, blank=True)
 
     def clean(self):
         if self.visibility not in dict(self.VISIBILITY_CHOICES):

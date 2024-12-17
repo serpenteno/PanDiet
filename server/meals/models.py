@@ -21,17 +21,17 @@ class Meal(models.Model):
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
     
     products = models.ManyToManyField(Product, through='MealProducts')
-    tags = models.ManyToManyField(Tag, blank=True)
+    tags = models.ManyToManyField(Tag, null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} added by {self.author} ({self.visibility})"
 
     def clean(self):
-        # Sprawdzamy, czy masa jest wiêksza od zera
+        # Sprawdzamy, czy masa jest wiï¿½ksza od zera
         if self.mass <= 0:
             raise ValidationError("Mass must be a positive value")
 
-        # Sprawdzamy, czy widocznoœæ jest poprawna
+        # Sprawdzamy, czy widocznoï¿½ï¿½ jest poprawna
         if self.visibility not in dict(self.VISIBILITY_CHOICES):
             raise ValidationError("Invalid visibility")
 
@@ -52,6 +52,7 @@ class Meal(models.Model):
 class MealProducts(models.Model):
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=5, decimal_places=2)
     
     def __str__(self):
         return f"{self.meal.name} - {self.product.name}"

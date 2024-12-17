@@ -1,33 +1,11 @@
 from django.db.models import Q
-from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Meal
 from .serializers import MealSerializer
-
-
-# Custom permission class for checking if user can display object
-class IsAdminOrDietitian(BasePermission):
-    def has_permission(self, request, view):
-        # Is user logged?
-        if not request.user or not request.user.is_authenticated:
-            return False
-        # Is user an admin or dietitian
-        return request.user.role in ['admin', 'dietitian']
-
-    def has_object_permission(self, request, view, obj):
-        # Admin full permissions
-        if request.user.role == 'admin':
-            return True
-        # Dietitian can edit their own meals
-        if request.user.role == 'dietitian':
-            if obj.author == request.user:
-                return True
-            # Dietitian can view public meals
-            return obj.visibility == 'public'
-        return False
+from common.permission_classes import IsAdminOrDietitian
 
 
 class MealViewSet(ModelViewSet):

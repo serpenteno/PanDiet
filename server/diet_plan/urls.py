@@ -4,7 +4,7 @@ from .views import DietPlanViewSet
 
 
 router = DefaultRouter()
-router.register(r'diet_plans', DietPlanViewSet, basename='diet_plan')
+router.register(r'', DietPlanViewSet, basename='diet_plan')
 
 urlpatterns = [
     path('', include(router.urls)),

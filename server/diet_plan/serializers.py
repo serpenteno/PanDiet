@@ -1,18 +1,18 @@
 from rest_framework import serializers
 from .models import DietPlan, DietPlanMeals
-from diet_plan.models import DietPlan
+from meals.models import Meal
 
 
 class DietPlanMealsSerializer(serializers.ModelSerializer):
-    diet_plan = serializers.PrimaryKeyRelatedField(queryset=DietPlan.objects.all())
+    meal = serializers.PrimaryKeyRelatedField(queryset=Meal.objects.all())
 
     class Meta:
         model = DietPlanMeals
-        fields = ['diet_plan']
+        fields = ['meal', 'day_number', 'day_time']
 
 
 class DietPlanSerializer(serializers.ModelSerializer):
-    diet_plans = DietPlanMealsSerializer(many=True, source='diet_planmeals_set')
+    meals = DietPlanMealsSerializer(many=True, source='dietplanmeals_set')
 
     class Meta:
         model = DietPlan
@@ -21,19 +21,21 @@ class DietPlanSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # We take meal data
-        meals_data = validated_data.pop('diet_planmeals_set', [])
+        meals_data = validated_data.pop('dietplanmeals_set', [])
         diet_plan = DietPlan.objects.create(**validated_data)
 
         # We create entries in DietPlanMeals
         for meal_item in meals_data:
             DietPlanMeals.objects.create(
                 diet_plan=diet_plan,
-                meal=meal_item['meal']
+                meal=meal_item['meal'],
+                day_number=meal_item['day_number'],
+                day_time=meal_item['day_time']
             )
         return diet_plan
 
     def update(self, instance, validated_data):
-        meals_data = validated_data.pop('diet_planmeals_set', None)
+        meals_data = validated_data.pop('dietplanmeals_set', None)
 
         # Update diet plan
         for attr, value in validated_data.items():
@@ -46,7 +48,9 @@ class DietPlanSerializer(serializers.ModelSerializer):
             for meal_item in meals_data:
                 DietPlanMeals.objects.create(
                     diet_plan=instance,
-                    meal=meal_item['meal']
+                    meal=meal_item['meal'],
+                    day_number=meal_item['day_number'],
+                    day_time=meal_item['day_time']
                 )
 
         return instance

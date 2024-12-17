@@ -1,14 +1,14 @@
 from rest_framework import serializers
 from .models import Meal, MealProducts
-from meals.models import Meal
+from products.models import Product
 
 
 class MealProductsSerializer(serializers.ModelSerializer):
-    meal = serializers.PrimaryKeyRelatedField(queryset=Meal.objects.all())
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
 
     class Meta:
         model = MealProducts
-        fields = ['meal']
+        fields = ['product', 'amount']
 
 
 class MealSerializer(serializers.ModelSerializer):
@@ -21,14 +21,15 @@ class MealSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # We take product data
-        products_data = validated_data.pop('mealnutrients_set', [])
+        products_data = validated_data.pop('mealproducts_set', [])
         meal = Meal.objects.create(**validated_data)
 
         # We create entries in MealNutrients
         for product_item in products_data:
             MealProducts.objects.create(
                 meal=meal,
-                product=product_item['product']
+                product=product_item['product'],
+                amount=product_item['amount']
             )
         return meal
 
@@ -46,7 +47,8 @@ class MealSerializer(serializers.ModelSerializer):
             for product_item in products_data:
                 MealProducts.objects.create(
                     meal=instance,
-                    product=product_item['nutrient']
+                    product=product_item['product'],
+                    amount=product_item['amount']
                 )
 
         return instance
