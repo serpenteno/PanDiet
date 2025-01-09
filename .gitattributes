@@ -1,0 +1,1 @@
+server/reactapp/* filter=lfs diff=lfs merge=lfs -text
