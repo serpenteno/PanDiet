@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,5 +25,6 @@ urlpatterns = [
     path('api/meals/', include('meals.urls')),
     path('api/dietplans/', include('diet_plan.urls')),
     path('api/users/', include('users.urls')),
-    path('api/token/', include('common.token_url'))
+    path('api/token/', include('common.token_url')),
+    path('', TemplateView.as_view(template_name='index.html')),
 ]
