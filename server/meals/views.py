@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.views.generic import ListView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -6,6 +7,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Meal
 from .serializers import MealSerializer
 from common.permission_classes import IsAdminOrDietitian, IsAdminOrDietitianOrClient
+
+
+class MealListView(ListView):
+    model = Meal
+    template_name = 'meals.html'
+    context_object_name = 'meals'
 
 
 class MealViewSet(ModelViewSet):

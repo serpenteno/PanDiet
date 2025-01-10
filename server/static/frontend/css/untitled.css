@@ -1,0 +1,10 @@
+.day-header {
+  text-align: center;
+  font-weight: bold;
+  padding-bottom: 10px;
+  border-bottom: var(--bs-secondary-border-subtle);
+  border-bottom: solid;
+  border-width: thin;
+  margin-bottom: 3px;
+}
+
