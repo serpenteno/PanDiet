@@ -2,19 +2,33 @@ from rest_framework import serializers
 from .models import DietPlan, DietPlanMeals
 from meals.serializers import MealSerializer
 from tags.serializers import TagSerializer
+from meals.models import Meal
+from tags.models import Tag
 
 
 class DietPlanMealsSerializer(serializers.ModelSerializer):
-    meal = MealSerializer()
+    meal = MealSerializer(read_only=True)
+
+    # For POST request we only get id
+    meal_id = serializers.PrimaryKeyRelatedField(
+        queryset=Meal.objects.all(),
+        write_only=True
+    )
 
     class Meta:
         model = DietPlanMeals
-        fields = ['meal', 'day_number', 'day_time']
+        fields = ['meal', 'meal_id', 'day_number', 'day_time']
 
 
 class DietPlanSerializer(serializers.ModelSerializer):
     meals = DietPlanMealsSerializer(many=True, source='dietplanmeals_set')
     tags = TagSerializer(many=True, read_only=True)
+    tags_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True,
+        write_only=True,
+        source='tags'
+    )
 
     class Meta:
         model = DietPlan
@@ -25,12 +39,16 @@ class DietPlanSerializer(serializers.ModelSerializer):
         # We take meal data
         meals_data = validated_data.pop('dietplanmeals_set', [])
         diet_plan = DietPlan.objects.create(**validated_data)
+        tags = validated_data.pop('tags', [])
+
+        if tags is not None:
+            diet_plan.tags.set(tags)
 
         # We create entries in DietPlanMeals
         for meal_item in meals_data:
             DietPlanMeals.objects.create(
                 diet_plan=diet_plan,
-                meal=meal_item['meal'],
+                meal=meal_item['meal_id'],
                 day_number=meal_item['day_number'],
                 day_time=meal_item['day_time']
             )
@@ -38,6 +56,10 @@ class DietPlanSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         meals_data = validated_data.pop('dietplanmeals_set', None)
+        tags = validated_data.pop('tags', None)
+
+        if tags is not None:
+            instance.tags.set(tags)
 
         # Update diet plan
         for attr, value in validated_data.items():
@@ -50,7 +72,7 @@ class DietPlanSerializer(serializers.ModelSerializer):
             for meal_item in meals_data:
                 DietPlanMeals.objects.create(
                     diet_plan=instance,
-                    meal=meal_item['meal'],
+                    meal=meal_item['meal_id'],
                     day_number=meal_item['day_number'],
                     day_time=meal_item['day_time']
                 )

@@ -13,6 +13,7 @@
                                 <table class="table my-0" id="productsTable">
                                     <thead>
                                         <tr style="background: var(--bs-light-bg-subtle);">
+                                            <th style="background: var(--bs-light-bg-subtle);">id</th>
                                             <th style="background: var(--bs-light-bg-subtle);">Product</th>
                                             <th style="background: var(--bs-light-bg-subtle);">Nutrients</th>
                                             <th style="background: var(--bs-light-bg-subtle);">Tags</th>
@@ -25,6 +26,7 @@
                                     </tbody>
                                     <tfoot>
                                         <tr style="background: var(--bs-light-bg-subtle);">
+                                            <td style="background: var(--bs-light-bg-subtle);"><strong>id</strong></td>
                                             <td style="background: var(--bs-light-bg-subtle);"><strong>Product</strong></td>
                                             <td style="background: var(--bs-light-bg-subtle);"><strong>Nutrients</strong></td>
                                             <td style="background: var(--bs-light-bg-subtle);"><strong>Tags</strong></td>
@@ -47,7 +49,9 @@
                                 <form>
                                     <div class="row">
                                         <div class="col-8" id="leftCol" style="overflow-y: auto;">
-                                            <label class="form-label text-secondary-emphasis">Product name:&nbsp;</label><input class="form-control" type="text" name="name"><label class="form-label text-secondary-emphasis">Product description:</label><textarea class="form-control" name="desc"></textarea>
+                                            <label class="form-label text-secondary-emphasis">Product name:&nbsp;</label><input class="form-control" type="text" name="name" required><label class="form-label text-secondary-emphasis">Product description:</label><textarea class="form-control" name="desc"></textarea>
+                                            <label class="form-label text-secondary-emphasis">Mass (g):</label>
+                                            <input class="form-control" type="number" name="mass" min="0.01" step="0.01" value="1" required>
                                             <div class="mb-3">
                                                 <label for="nutrientsSelect" class="form-label text-secondary-emphasis">Nutrients:</label>
                                                 <select id="nutrientsSelect" name="nutrient-id" multiple style="width: 100%"></select>
@@ -64,6 +68,7 @@
                                                 <tr>
                                                     <th>Nutrient</th>
                                                     <th>Amount</th>
+                                                    <th>Unit</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -74,7 +79,7 @@
                                     </div>
                                 </form>
                             </div>
-                            <div class="modal-footer"><button class="btn btn-light" type="button" id="saveProductBtn" data-bs-dismiss="modal">Close</button><button class="btn btn-primary" type="submit" style="color: var(--bs-light);">Save</button></div>
+                            <div class="modal-footer"><button class="btn btn-light" type="button" data-bs-dismiss="modal">Close</button><button class="btn btn-primary" id="saveProductBtn" type="button" style="color: var(--bs-light);">Save</button></div>
                         </div>
                     </div>
                 </div><!-- End: Modal Edit/Add -->
@@ -142,7 +147,8 @@
             // data => { count, next, previous, results: [...] } (standard DRF)
             const results = data.results.map(item => ({
                 id: item.id.toString(),
-                text: item.name
+                text: item.name,
+                unit: item.unit
             }));
             let more = false;
             if (data.next) {
@@ -163,6 +169,7 @@
         // e.params.data => {id, text}
         let nutrientId = e.params.data.id;
         let nutrientName = e.params.data.text;
+        let nutrientUnit = e.params.data.unit;
 
         // Add table row
         let rowHtml = `
@@ -171,6 +178,7 @@
             <td>
                 <input type="number" name="nutrient-amount-${nutrientId}" class="form-control nutrient-amount" min="0.01" step="0.01" value="1" required>
             </td>
+            <td>${nutrientUnit}</td>
             </tr>
         `;
         $('#nutrientsTable tbody').append(rowHtml);
@@ -193,6 +201,9 @@
                 "dataSrc": "data"
             },
             "columns": [
+                // Hidden in order to fetch id
+                { "data": "id", "visible": false },
+
                 // Product name
                 { "data": "name" },
 
@@ -222,7 +233,7 @@
                 // Tags
                 {
                     "data": "tags",
-                    "searchable": false,
+                    "searchable": true,
                     "render": function(data, type, row) {
                         if (!data || data.length === 0) {
                             return 'No tags';
@@ -231,7 +242,7 @@
                         data.forEach(function(tag) {
                             tagsHtml += `
                                 <span class="badge bg-secondary me-1 ms-1">
-                                    ${tag.name} (#${tag.id})
+                                    ${tag.name}
                                 </span>
                             `;
                         });
@@ -355,11 +366,18 @@
                 });
             }
         });
+
+        // Handle "Edit" click
+        $(document).on('click', '.edit-btn', function() {
+            var productId = $(this).data('id');
+            editProduct(productId);
+        });
     });
 
     function resetProductModal() {
         // Clear all fields
         $('input[name="name"]').val('');
+        $('input[name="mass"]').val(1);
         $('textarea[name="desc"]').val('');
         $('#formCheck-1').prop('checked', false);
 
@@ -369,6 +387,11 @@
 
         // Clear nutrient table
         $('#nutrientsTable tbody').empty();
+
+        // Reset save button to createProduct
+        $('#saveProductBtn').text('Save').off('click').on('click', function() {
+            createProduct();
+        });
     }
 
     function createProduct() {
@@ -376,23 +399,24 @@
         var data = {};
 
         data.name = $('input[name="name"]').val();
+        data.mass = $('input[name="mass"]').val();
         data.description = $('textarea[name="desc"]').val();
         data.visibility = $('#formCheck-1').is(':checked') ? 'public' : 'private';
 
         // Collect tags
-        var selectedTags = $('#tagsSelect').val() || []; // np. ["3","5"]
-        data.tags = selectedTags.map(function(idStr) {
-            return { id: idStr }; 
+        var selectedTags = $('#tagsSelect').val() || [];
+        data.tags_ids = selectedTags.map(function(idStr) {
+            return parseInt(idStr);
         });
 
         // Collect nutrients
-        var selectedNutrients = $('#nutrientsSelect').val() || []; // ["1","2"]
+        var selectedNutrients = $('#nutrientsSelect').val() || [];
         var nutrientsData = [];
         selectedNutrients.forEach(function(nutrientId) {
             let row = $('#nutrientsTable tbody tr[data-nutrient-id="'+nutrientId+'"]');
             let amountVal = row.find('.nutrient-amount').val() || "1";
             nutrientsData.push({
-            nutrient: nutrientId, 
+            nutrient_id: nutrientId, 
             amount: amountVal
             });
         });
@@ -417,6 +441,111 @@
         });
     }
 
+    function updateProduct(productId) {
+        // Collect data
+        var data = {};
+
+        data.name = $('input[name="name"]').val();
+        data.mass = $('input[name="mass"]').val();
+        data.description = $('textarea[name="desc"]').val();
+        data.visibility = $('#formCheck-1').is(':checked') ? 'public' : 'private';
+
+        // Collect tags
+        var selectedTags = $('#tagsSelect').val() || [];
+        data.tags_ids = selectedTags.map(function(idStr) {
+            return parseInt(idStr, 10);
+        });
+
+        // Collect nutrients
+        var nutrientsData = [];
+        $('#nutrientsTable tbody tr').each(function() {
+            var nutrientId = $(this).data('nutrient-id');
+            var amountVal = $(this).find('.nutrient-amount').val() || "1";
+            nutrientsData.push({
+                nutrient_id: parseInt(nutrientId, 10), 
+                amount: amountVal
+            });
+        });
+        data.nutrients = nutrientsData;
+
+        console.log('Updating product', productId, 'with data:', data); // Debugging
+
+        // Send PUT
+        $.ajax({
+            url: `/api/products/${productId}/`,
+            method: "PUT",
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function(response) {
+                $('#modal-1').modal('hide');
+                // Refresh DataTable
+                $('#productsTable').DataTable().ajax.reload();
+            },
+            error: function(xhr, status, error) {
+                alert("Error updating product.");
+                console.error(xhr, status, error);
+            }
+        });
+    }
+
+    function editProduct(productId) {
+        // Reset modal to ensure no residual data
+        resetProductModal();
+
+        // Fetch product data via AJAX GET
+        $.ajax({
+            url: `/api/products/${productId}/`,
+            method: 'GET',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+            success: function(response) {
+                // Populate modal fields with fetched data
+                $('input[name="name"]').val(response.name);
+                $('input[name="mass"]').val(response.mass);
+                $('textarea[name="desc"]').val(response.description);
+                $('#formCheck-1').prop('checked', response.visibility === 'public');
+
+                // Set tags
+                var tags = response.tags;
+                var tags_ids = tags.map(function(tag) { return tag.id.toString(); });
+                $('#tagsSelect').val(tags_ids).trigger('change');
+
+                // Set nutrients
+                var nutrients = response.nutrients;
+                nutrients.forEach(function(item) {
+                    var nutrient = item.nutrient;
+                    var amount = item.amount;
+
+                    let rowHtml = `
+                        <tr data-nutrient-id="${nutrient.id}">
+                            <td>${nutrient.name}</td>
+                            <td>
+                                <input type="number" name="nutrient-amount-${nutrient.id}" class="form-control nutrient-amount" min="0.01" step="0.01" value="${amount}" required>
+                            </td>
+                            <td>${nutrient.unit}</td>
+                        </tr>
+                    `;
+                    $('#nutrientsTable tbody').append(rowHtml);
+                });
+
+                // Set nutrientsSelect to include already selected nutrients to prevent re-selection
+                var selectedNutrients = nutrients.map(function(item) { return item.nutrient.id.toString(); });
+                $('#nutrientsSelect').val(selectedNutrients).trigger('change');
+
+                // Set save button to updateProduct
+                $('#saveProductBtn').text('Update').off('click').on('click', function() {
+                    updateProduct(productId);
+                });
+
+                // Show modal
+                $('#modal-1').modal('show');
+            },
+            error: function(xhr, status, error) {
+                alert('Error fetching product data.');
+                console.error(xhr, status, error);
+            }
+        });
+    }
 
     // Handle "AddButton" click
     $('#addProductBtn').on('click', function() {
