@@ -150,16 +150,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST API settings
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination', # Pagination class
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination', # Pagination class
     'PAGE_SIZE': 30,  # Elements on single page
     'DEFAULT_FILTER_BACKENDS': [
-        'rest_framework_datatables.filters.DatatablesFilterBackend',
         'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework_datatables.filters.DatatablesFilterBackend',
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
     'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework_datatables.renderers.DatatablesRenderer',
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',  # Without it there is no browsable API interface
     ],
@@ -168,7 +167,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
-
 }
 
 LOGIN_URL = 'login'

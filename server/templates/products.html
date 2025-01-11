@@ -3,7 +3,7 @@
 
 {% block content %}
                 <div class="container-fluid">
-                    <h3 class="text-secondary-emphasis mb-0">Products</h3><button class="btn btn-success mt-3 mb-3" type="button" style="color: rgb(255,255,255);" data-bs-target="#modal-1" data-bs-toggle="modal">Add new</button>
+                    <h3 class="text-secondary-emphasis mb-0">Products</h3><button class="btn btn-success mt-3 mb-3" type="button" id="addProductBtn" style="color: rgb(255,255,255);">Add new</button>
                     <div class="card shadow">
                         <div class="card-header py-3" style="background: var(--bs-light-bg-subtle);">
                             <p class="text-primary m-0 fw-bold" style="color: var(--bs-primary);">Products List</p>
@@ -38,43 +38,43 @@
                     </div>
                 </div><!-- Start: Modal Edit/Add -->
                 <div class="modal fade" role="dialog" tabindex="-1" id="modal-1">
-                    <div class="modal-dialog modal-dialog-scrollable" role="document">
+                    <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h4 class="modal-title text-secondary-emphasis">Product Editor</h4><button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
                                 <form>
-                                    <div class="col"><label class="form-label text-secondary-emphasis">Product name:&nbsp;</label><input class="form-control" type="text" name="name"><label class="form-label text-secondary-emphasis">Product description:</label><textarea class="form-control" name="desc"></textarea>
-                                        <div class="container ps-0 pe-0 mb-0 pb-1" style="text-align: left;"><label class="form-label text-secondary-emphasis">Nutrients:</label>
-                                            <div class="input-group"><span class="input-group-text" style="background: transparent;"><button class="btn btn-danger btn-sm" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-32 0 512 512" width="1em" height="1em" fill="currentColor" class="text-light">
-                                                            <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. -->
-                                                            <path d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"></path>
-                                                        </svg></button></span><select class="form-select form-select-sm" name="nutreint-id">
-                                                    <optgroup label="This is a group">
-                                                        <option value="12" selected="">This is item 1</option>
-                                                        <option value="13">This is item 2</option>
-                                                        <option value="14">This is item 3</option>
-                                                    </optgroup>
-                                                </select><input class="form-control form-control-sm" type="number" name="nutrient-amount" placeholder="amount"></div><button class="btn btn-success btn-sm text-center ms-2 me-3 mt-2 mb-2" type="button" style="color: rgb(255,255,255);">Add</button>
+                                    <div class="row">
+                                        <div class="col-8" id="leftCol" style="overflow-y: auto;">
+                                            <label class="form-label text-secondary-emphasis">Product name:&nbsp;</label><input class="form-control" type="text" name="name"><label class="form-label text-secondary-emphasis">Product description:</label><textarea class="form-control" name="desc"></textarea>
+                                            <div class="mb-3">
+                                                <label for="nutrientsSelect" class="form-label text-secondary-emphasis">Nutrients:</label>
+                                                <select id="nutrientsSelect" name="nutrient-id" multiple style="width: 100%"></select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label text-secondary-emphasis" for="tagsSelect">Tags:</label>
+                                                <select id="tagsSelect" name="tag-id" multiple style="width:100%"></select>
+                                            </div>                                          
+                                            <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-1" name="visibility"><label class="form-check-label text-secondary-emphasis" for="formCheck-1">Public</label></div>
                                         </div>
-                                        <div class="container ps-0 pe-0 mb-0 pb-1" style="text-align: left;"><label class="form-label text-secondary-emphasis">Tags:</label>
-                                            <div class="input-group"><span class="input-group-text" style="background: transparent;"><button class="btn btn-danger btn-sm" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-32 0 512 512" width="1em" height="1em" fill="currentColor" class="text-light">
-                                                            <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. -->
-                                                            <path d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"></path>
-                                                        </svg></button></span><select class="form-select form-select-sm" name="tag-id">
-                                                    <optgroup label="This is a group">
-                                                        <option value="12" selected="">This is item 1</option>
-                                                        <option value="13">This is item 2</option>
-                                                        <option value="14">This is item 3</option>
-                                                    </optgroup>
-                                                </select></div><button class="btn btn-success btn-sm text-center ms-2 me-3 mt-2 mb-2" type="button" style="color: rgb(255,255,255);">Add</button>
+                                        <div class="col-4" id="rightCol" style="overflow-y: auto;">
+                                            <table class="table" id="nutrientsTable">
+                                                <thead>
+                                                <tr>
+                                                    <th>Nutrient</th>
+                                                    <th>Amount</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <!-- dynamic generation -->
+                                                </tbody>
+                                            </table>
                                         </div>
-                                        <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-1" name="visibility"><label class="form-check-label text-secondary-emphasis" for="formCheck-1">Public</label></div>
                                     </div>
                                 </form>
                             </div>
-                            <div class="modal-footer"><button class="btn btn-light" type="button" data-bs-dismiss="modal">Close</button><button class="btn btn-primary" type="submit" style="color: var(--bs-light);">Save</button></div>
+                            <div class="modal-footer"><button class="btn btn-light" type="button" id="saveProductBtn" data-bs-dismiss="modal">Close</button><button class="btn btn-primary" type="submit" style="color: var(--bs-light);">Save</button></div>
                         </div>
                     </div>
                 </div><!-- End: Modal Edit/Add -->
@@ -83,7 +83,108 @@
 {% block extra_js %}
 <script>
     $(document).ready(function() {
-        // Initialize DataTables (client-side search by default)
+        // 1) Initialize Select2 for tags
+        $('#tagsSelect').select2({
+        placeholder: 'Search or pick tags...',
+        dropdownParent: $('#modal-1'), // dropdown on top of modal-1
+        minimumInputLength: 0, // user can open list without typing
+        ajax: {
+            url: '/api/tags/',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+            // DRF SearchFilter => param: ?search=some text
+            // PageNumberPagination => param: ?page=...
+            return {
+                search: params.term || '',    // to pass ?search=search_phrase in order to search API
+                page: params.page || 1        // API uses ?page=N
+            };
+            },
+            processResults: function (data, params) {
+            // data – standard DRF: {count, next, previous, results:[...]}
+
+            // Convert DRF "results" => Select2 "results" (id, text)
+            const results = data.results.map(item => ({
+                id: item.id.toString(),         // value
+                text: item.name                 // label
+            }));
+
+            let more = false;
+            if (data.next) {
+                more = true;
+            }
+
+            return {
+                results: results,
+                pagination: {
+                more: more
+                }
+            };
+            }
+        }
+        });
+        // 2) Initialize Select2 for nutrients
+        $('#nutrientsSelect').select2({
+        placeholder: 'Search or pick nutrients...',
+        dropdownParent: $('#modal-1'), // dropdown on top of modal-1
+        minimumInputLength: 0,
+        ajax: {
+            url: '/api/nutrients/',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+            return {
+                search: params.term || '',
+                page: params.page || 1
+            };
+            },
+            processResults: function (data, params) {
+            // data => { count, next, previous, results: [...] } (standard DRF)
+            const results = data.results.map(item => ({
+                id: item.id.toString(),
+                text: item.name
+            }));
+            let more = false;
+            if (data.next) {
+                more = true;
+            }
+            return {
+                results: results,
+                pagination: {
+                more: more
+                }
+            };
+            }
+        }
+        });
+
+        // When user selects a new nutrient
+        $('#nutrientsSelect').on('select2:select', function(e) {
+        // e.params.data => {id, text}
+        let nutrientId = e.params.data.id;
+        let nutrientName = e.params.data.text;
+
+        // Add table row
+        let rowHtml = `
+            <tr data-nutrient-id="${nutrientId}">
+            <td>${nutrientName}</td>
+            <td>
+                <input type="number" name="nutrient-amount-${nutrientId}" class="form-control nutrient-amount" min="0.01" step="0.01" value="1" required>
+            </td>
+            </tr>
+        `;
+        $('#nutrientsTable tbody').append(rowHtml);
+        });
+
+        // When user unselects a nutrient
+        $('#nutrientsSelect').on('select2:unselect', function(e) {
+        let nutrientId = e.params.data.id;
+        // Remove row from table
+        $('#nutrientsTable tbody tr[data-nutrient-id="'+nutrientId+'"]').remove();
+        });
+
+
+        // Initialize DataTables (client-side search by default - changed to server side)
         var table = $('#productsTable').DataTable({
             serverSide: true,
             processing: true,
@@ -98,7 +199,7 @@
                 // Nutrients
                 {
                     "data": "nutrients",
-                    "searchable": false,
+                    "searchable": true,
                     "render": function(data, type, row) {
                         if (!data || data.length === 0) {
                             return 'No nutrients';
@@ -237,118 +338,6 @@
             }
         });
 
-        // Handle "Edit" click
-        $(document).on('click', '.edit-btn', function() {
-            var productId = $(this).data('id');
-            $.ajax({
-                url: `/api/products/${productId}/`,
-                method: 'GET',
-                success: function(data) {
-                    $('#productForm')[0].reset();
-                    $('input[name="name"]').val(data.name);
-                    $('textarea[name="desc"]').val(data.description);
-                    $('#formCheck-1').prop('checked', data.visibility === 'public');
-
-                    $('#nutrientsContainer').empty();
-                    data.nutrients.forEach(function(item) {
-                        let rowHtml = `
-                            <div class="input-group mb-2">
-                                <span class="input-group-text">
-                                    <button class="btn btn-danger btn-sm remove-nutrient" type="button">&times;</button>
-                                </span>
-                                <select class="form-select form-select-sm nutrient-id" name="nutrient-id">
-                                    <option value="${item.nutrient.id}" selected>
-                                        ${item.nutrient.name}
-                                    </option>
-                                </select>
-                                <input class="form-control form-control-sm" type="number" name="nutrient-amount"
-                                       placeholder="Amount" value="${item.amount}" required>
-                            </div>
-                        `;
-                        $('#nutrientsContainer').append(rowHtml);
-                    });
-
-                    $('#tagsContainer').empty();
-                    data.tags.forEach(function(tag) {
-                        let rowHtml = `
-                            <div class="input-group mb-2">
-                                <span class="input-group-text">
-                                    <button class="btn btn-danger btn-sm remove-tag" type="button">&times;</button>
-                                </span>
-                                <select class="form-select form-select-sm tag-id" name="tag-id">
-                                    <option value="${tag.id}" selected>${tag.name}</option>
-                                </select>
-                            </div>
-                        `;
-                        $('#tagsContainer').append(rowHtml);
-                    });
-
-                    if ($('#productId').length === 0) {
-                        $('#productForm').append(`
-                            <input type="hidden" id="productId" name="productId" value="${data.id}">
-                        `);
-                    } else {
-                        $('#productId').val(data.id);
-                    }
-
-                    $('#saveProductBtn').text('Update').off('click').on('click', function() {
-                        var updateData = $('#productForm').serializeArray();
-                        var updatePayload = {};
-
-                        updateData.forEach(function(item) {
-                            if (item.name.startsWith('nutrient-id')) {
-                                if (!updatePayload.nutrients) {
-                                    updatePayload.nutrients = [];
-                                }
-                                updatePayload.nutrients.push({
-                                    nutrient: item.value
-                                });
-                            }
-                            else if (item.name.startsWith('nutrient-amount')) {
-                                updatePayload.nutrients[updatePayload.nutrients.length - 1].amount = item.value;
-                            }
-                            else if (item.name === 'tag-id') {
-                                if (!updatePayload.tags) {
-                                    updatePayload.tags = [];
-                                }
-                                updatePayload.tags.push({ id: item.value });
-                            }
-                            else if (item.name !== 'productId') {
-                                updatePayload[item.name] = item.value;
-                            }
-                        });
-
-                        updatePayload.visibility = $('#formCheck-1').is(':checked') ? 'public' : 'private';
-
-                        let productId = $('#productId').val();
-
-                        $.ajax({
-                            url: `/api/products/${productId}/`,
-                            method: 'PUT',
-                            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
-                            contentType: 'application/json',
-                            data: JSON.stringify(updatePayload),
-                            success: function(response) {
-                                $('#modal-1').modal('hide');
-                                table.ajax.reload();
-                                $('#saveProductBtn').text('Save').off('click').on('click', function() {
-                                    $('#productForm')[0].reset();
-                                });
-                            },
-                            error: function(xhr, status, error) {
-                                alert('Error updating product.');
-                            }
-                        });
-                    });
-
-                    $('#modal-1').modal('show');
-                },
-                error: function(xhr, status, error) {
-                    alert('Error fetching product data.');
-                }
-            });
-        });
-
         // Handle "Delete" click
         $(document).on('click', '.delete-btn', function() {
             var productId = $(this).data('id');
@@ -366,50 +355,83 @@
                 });
             }
         });
+    });
 
-        // Handle "Save" for creating a new product
-        $('#saveProductBtn').on('click', function() {
-            var formData = $('#productForm').serializeArray();
-            var data = {};
-            formData.forEach(function(item) {
-                if (item.name.startsWith('nutrient-id')) {
-                    if (!data.nutrients) {
-                        data.nutrients = [];
-                    }
-                    data.nutrients.push({ nutrient: item.value });
-                }
-                else if (item.name.startsWith('nutrient-amount')) {
-                    data.nutrients[data.nutrients.length - 1].amount = item.value;
-                }
-                else if (item.name === 'tag-id') {
-                    if (!data.tags) {
-                        data.tags = [];
-                    }
-                    data.tags.push({ id: item.value });
-                }
-                else {
-                    data[item.name] = item.value;
-                }
-            });
+    function resetProductModal() {
+        // Clear all fields
+        $('input[name="name"]').val('');
+        $('textarea[name="desc"]').val('');
+        $('#formCheck-1').prop('checked', false);
 
-            data.visibility = $('#formCheck-1').is(':checked') ? 'public' : 'private';
+        // Reset selects
+        $('#tagsSelect').val(null).trigger('change');
+        $('#nutrientsSelect').val(null).trigger('change');
 
-            $.ajax({
-                url: "{% url 'product-list' %}",
-                method: 'POST',
-                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function(response) {
-                    $('#modal-1').modal('hide');
-                    table.ajax.reload();
-                },
-                error: function(xhr, status, error) {
-                    alert('Error creating product.');
-                }
+        // Clear nutrient table
+        $('#nutrientsTable tbody').empty();
+    }
+
+    function createProduct() {
+        // Collect data
+        var data = {};
+
+        data.name = $('input[name="name"]').val();
+        data.description = $('textarea[name="desc"]').val();
+        data.visibility = $('#formCheck-1').is(':checked') ? 'public' : 'private';
+
+        // Collect tags
+        var selectedTags = $('#tagsSelect').val() || []; // np. ["3","5"]
+        data.tags = selectedTags.map(function(idStr) {
+            return { id: idStr }; 
+        });
+
+        // Collect nutrients
+        var selectedNutrients = $('#nutrientsSelect').val() || []; // ["1","2"]
+        var nutrientsData = [];
+        selectedNutrients.forEach(function(nutrientId) {
+            let row = $('#nutrientsTable tbody tr[data-nutrient-id="'+nutrientId+'"]');
+            let amountVal = row.find('.nutrient-amount').val() || "1";
+            nutrientsData.push({
+            nutrient: nutrientId, 
+            amount: amountVal
             });
         });
+        data.nutrients = nutrientsData;
+
+        // Send POST
+        $.ajax({
+            url: "/api/products/",
+            method: "POST",
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function(response) {
+            $('#modal-1').modal('hide');
+            // Odśwież datatable
+            $('#productsTable').DataTable().ajax.reload();
+            },
+            error: function(xhr, status, error) {
+            alert("Error creating product.");
+            console.error(xhr, status, error);
+            }
+        });
+    }
+
+
+    // Handle "AddButton" click
+    $('#addProductBtn').on('click', function() {
+        // reset modal
+        resetProductModal();
+
+        // Set save btn to create new product
+        $('#saveProductBtn').text('Save').off('click').on('click', function() {
+            createProduct();
+        });
+
+        // Show modal
+        $('#modal-1').modal('show');
     });
+
 </script>
 
 {% endblock %}

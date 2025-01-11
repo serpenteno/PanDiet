@@ -3,12 +3,14 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny
+from rest_framework.renderers import JSONRenderer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.views.generic import ListView
 from rest_framework_datatables.filters import DatatablesFilterBackend
 from rest_framework_datatables.pagination import DatatablesPageNumberPagination
+from rest_framework_datatables.renderers import DatatablesRenderer
 
 from .models import Product
 from .serializers import ProductSerializer
@@ -45,7 +47,7 @@ class ProductViewSet(ModelViewSet):
     filterset_fields = ['author', 'visibility', 'nutrients', 'tags']
 
     # Search
-    search_fields = ['name', 'mass', 'author', 'nutrients', 'tags']
+    search_fields = ['name', 'mass', 'tags__name', 'nutrients__name']
 
     # Sort
     ordering_fields = ['name', 'mass']
@@ -95,9 +97,12 @@ class ProductDatatablesView(generics.ListAPIView):
     API endpoint specific for Product data table from JQuery (display).
     """
     serializer_class = ProductSerializer
+    renderer_classes = [DatatablesRenderer, JSONRenderer]
     pagination_class = DatatablesPageNumberPagination
     filter_backends = [DatatablesFilterBackend]
     permission_classes = [IsAdminOrDietitianOrClient]
+
+    search_fields = ['name', 'mass', 'tags__name', 'nutrients__name']
 
     def get_queryset(self):
         user = self.request.user

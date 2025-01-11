@@ -4,11 +4,13 @@ from django.views.generic import DetailView, ListView
 from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny
+from rest_framework.renderers import JSONRenderer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_datatables.filters import DatatablesFilterBackend
 from rest_framework_datatables.pagination import DatatablesPageNumberPagination
+from rest_framework_datatables.renderers import DatatablesRenderer
 
 from .models import DietPlan
 from .serializers import DietPlanSerializer
@@ -63,7 +65,7 @@ class DietPlanViewSet(ModelViewSet):
     filterset_fields = ['author', 'visibility', 'meals', 'tags']
 
     # Search
-    search_fields = ['name', 'author', 'meals', 'tags']
+    search_fields = ['name', 'meals__name', 'tags__name']
 
     # Sort
     ordering_fields = ['name']
@@ -113,9 +115,12 @@ class DietPlanDatatablesView(generics.ListAPIView):
     API endpoint specific for Dietplan data table from JQuery (display).
     """
     serializer_class = DietPlanSerializer
+    renderer_classes = [DatatablesRenderer, JSONRenderer]
     pagination_class = DatatablesPageNumberPagination
     filter_backends = [DatatablesFilterBackend]
     permission_classes = [IsAdminOrDietitianOrClient]
+
+    search_fields = ['name', 'author__name', 'meals__name', 'tags__name']
 
     def get_queryset(self):
         user = self.request.user
