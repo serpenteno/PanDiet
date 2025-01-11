@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from .models import Meal, MealProducts
-from products.models import Product
+from products.serializers import ProductSerializer
+from tags.serializers import TagSerializer
 
 
 class MealProductsSerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    product = ProductSerializer()
 
     class Meta:
         model = MealProducts
@@ -13,6 +14,7 @@ class MealProductsSerializer(serializers.ModelSerializer):
 
 class MealSerializer(serializers.ModelSerializer):
     products = MealProductsSerializer(many=True, source='mealproducts_set')
+    tags = TagSerializer(many=True, read_only=True)
 
     class Meta:
         model = Meal

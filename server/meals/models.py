@@ -21,7 +21,7 @@ class Meal(models.Model):
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
     
     products = models.ManyToManyField(Product, through='MealProducts')
-    tags = models.ManyToManyField(Tag, null=True, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return f"{self.name} added by {self.author} ({self.visibility})"

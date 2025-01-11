@@ -1,13 +1,48 @@
 from django.db.models import Q
 from django.shortcuts import render
+from django.views.generic import DetailView, ListView
+from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_datatables.filters import DatatablesFilterBackend
+from rest_framework_datatables.pagination import DatatablesPageNumberPagination
+
 from .models import DietPlan
 from .serializers import DietPlanSerializer
 from common.permission_classes import IsAdminOrDietitian, IsAdminOrDietitianOrClient
+
+
+class DietPlanListView(ListView):
+    """
+    Render page with diet plans list
+    """
+    model = DietPlan
+    context_object_name = 'dietplans'
+
+    def get_template_names(self):
+        user_role = self.request.user.role
+        if user_role in ['admin', 'dietitian']:
+            return ['Dietplans.html']
+
+
+class DietPlanDetailView(DetailView):
+    """
+    Render page with detail view/edit view
+    """
+    model = DietPlan
+    context_object_name = 'dietplan'
+
+    def get_template_names(self):
+        user_role = self.request.user.role
+        if user_role in ['admin', 'dietitian']:
+            return ['DietPlanEdit.html']
+        elif user_role == "client":
+            return ['DietPlanDisplay.html']
+        else:
+            return
 
 
 class DietPlanViewSet(ModelViewSet):
@@ -71,3 +106,31 @@ class DietPlanViewSet(ModelViewSet):
     def perform_create(self, instance):
         # Add author to the object
         instance.save(author=self.request.user)
+
+
+class DietPlanDatatablesView(generics.ListAPIView):
+    """
+    API endpoint specific for Dietplan data table from JQuery (display).
+    """
+    serializer_class = DietPlanSerializer
+    pagination_class = DatatablesPageNumberPagination
+    filter_backends = [DatatablesFilterBackend]
+    permission_classes = [IsAdminOrDietitianOrClient]
+
+    def get_queryset(self):
+        user = self.request.user
+
+        # Permission logic
+        if user.role == 'admin':
+            qs = DietPlan.objects.all()
+        elif user.role == 'dietitian':
+            qs = DietPlan.objects.filter(Q(author=user) | Q(visibility='public'))
+        elif user.role == 'client':
+            qs = DietPlan.objects.filter(
+                id__in=user.diet_plan.meals.all().prefetch_related('products')
+                      .values_list('products__id', flat=True)
+            )
+        else:
+            qs = DietPlan.objects.none()
+
+        return qs

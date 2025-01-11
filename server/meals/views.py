@@ -1,9 +1,12 @@
 from django.db.models import Q
 from django.views.generic import ListView
+from rest_framework import generics
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_datatables.filters import DatatablesFilterBackend
+from rest_framework_datatables.pagination import DatatablesPageNumberPagination
 from .models import Meal
 from .serializers import MealSerializer
 from common.permission_classes import IsAdminOrDietitian, IsAdminOrDietitianOrClient
@@ -11,8 +14,11 @@ from common.permission_classes import IsAdminOrDietitian, IsAdminOrDietitianOrCl
 
 class MealListView(ListView):
     model = Meal
-    template_name = 'meals.html'
     context_object_name = 'meals'
+    def get_template_names(self):
+        user_role = self.request.user.role
+        if user_role in ['admin', 'dietitian']:
+            return ['meals.html']
 
 
 class MealViewSet(ModelViewSet):
@@ -76,3 +82,31 @@ class MealViewSet(ModelViewSet):
     def perform_create(self, instance):
         # Add author to the object
         instance.save(author=self.request.user)
+
+
+class MealDatatablesView(generics.ListAPIView):
+    """
+    API endpoint specific for Meal data table from JQuery (display).
+    """
+    serializer_class = MealSerializer
+    pagination_class = DatatablesPageNumberPagination
+    filter_backends = [DatatablesFilterBackend]
+    permission_classes = [IsAdminOrDietitianOrClient]
+
+    def get_queryset(self):
+        user = self.request.user
+
+        # Permissions logic
+        if user.role == 'admin':
+            qs = Meal.objects.all()
+        elif user.role == 'dietitian':
+            qs = Meal.objects.filter(Q(author=user) | Q(visibility='public'))
+        elif user.role == 'client':
+            qs = Meal.objects.filter(
+                id__in=user.diet_plan.meals.all().prefetch_related('products')
+                      .values_list('products__id', flat=True)
+            )
+        else:
+            qs = Meal.objects.none()
+
+        return qs

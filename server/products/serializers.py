@@ -1,10 +1,12 @@
 from rest_framework import serializers
 from .models import Product, ProductNutrient
 from nutrients.models import Nutrient
+from tags.serializers import TagSerializer
+from nutrients.serializers import NutrientSerializer
 
 
 class ProductNutrientSerializer(serializers.ModelSerializer):
-    nutrient = serializers.PrimaryKeyRelatedField(queryset=Nutrient.objects.all())
+    nutrient = NutrientSerializer()
 
     class Meta:
         model = ProductNutrient
@@ -13,6 +15,7 @@ class ProductNutrientSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     nutrients = ProductNutrientSerializer(many=True, source='productnutrient_set')
+    tags = TagSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product

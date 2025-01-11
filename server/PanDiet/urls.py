@@ -23,8 +23,9 @@ urlpatterns = [
     path('api/nutrients/', include('nutrients.urls')),
     path('', include('products.urls')),
     path('', include('meals.urls')),
-    path('api/dietplans/', include('diet_plan.urls')),
-    path('api/users/', include('users.urls')),
+    path('', include('diet_plan.urls')),
+    path('', include('users.urls')),
+    path('', include('tags.urls')),
     path('api/token/', include('common.token_url')),
-    path('', TemplateView.as_view(template_name='index.html'), name='index'),
+    path('', include('common.urls')),
 ]

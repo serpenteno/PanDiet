@@ -17,7 +17,7 @@ class DietPlan(models.Model):
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES)
 
     meals = models.ManyToManyField(Meal, through='DietPlanMeals')
-    tags = models.ManyToManyField(Tag, null=True, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def update_dietplan_tags(self):
         inherited_tags = set()
