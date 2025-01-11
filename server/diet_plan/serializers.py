@@ -32,7 +32,7 @@ class DietPlanSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DietPlan
-        fields = ['id', 'name', 'description', 'tags', 'author', 'visibility', 'meals']
+        fields = ['id', 'name', 'description', 'tags', 'author', 'visibility', 'meals', 'tags_ids']
         read_only_fields = ['id', 'author']
 
     def create(self, validated_data):
