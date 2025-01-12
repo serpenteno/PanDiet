@@ -65,7 +65,7 @@ class DietPlanViewSet(ModelViewSet):
     filterset_fields = ['author', 'visibility', 'meals', 'tags']
 
     # Search
-    search_fields = ['name', 'meals__name', 'tags__name']
+    search_fields = ['name', 'meals__name', 'tags__name', 'tags__name']
 
     # Sort
     ordering_fields = ['name']
@@ -120,7 +120,7 @@ class DietPlanDatatablesView(generics.ListAPIView):
     filter_backends = [DatatablesFilterBackend]
     permission_classes = [IsAdminOrDietitianOrClient]
 
-    search_fields = ['name', 'author__name', 'meals__name', 'tags__name']
+    search_fields = ['name', 'meals__name', 'tags__name']
 
     def get_queryset(self):
         user = self.request.user

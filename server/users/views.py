@@ -75,7 +75,7 @@ class DietitianClientViewSet(viewsets.ModelViewSet):
     ordering = ['id']
 
 
-class ProductDatatablesView(generics.ListAPIView):
+class UserDatatablesView(generics.ListAPIView):
     """
     API endpoint specific for User data table from JQuery (display).
     """

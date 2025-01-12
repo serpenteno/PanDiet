@@ -13,6 +13,7 @@
                                 <table class="table my-0" id="dietplansTable">
                                     <thead>
                                         <tr style="background: var(--bs-light-bg-subtle);">
+                                            <th style="background: var(--bs-light-bg-subtle);">id</th> <!-- Hidden -->
                                             <th style="background: var(--bs-light-bg-subtle);">Dietplan</th>
                                             <th style="background: var(--bs-light-bg-subtle);">Tags</th>
                                             <th style="background: var(--bs-light-bg-subtle);">Visibility</th>
@@ -24,6 +25,7 @@
                                     </tbody>
                                     <tfoot>
                                         <tr style="background: var(--bs-light-bg-subtle);">
+                                            <th style="background: var(--bs-light-bg-subtle);"><strong></strong>id</strong></th> <!-- Hidden -->
                                             <td style="background: var(--bs-light-bg-subtle);"><strong>Dietplan</strong></td>
                                             <td style="background: var(--bs-light-bg-subtle);"><strong>Tags</strong></td>
                                             <td style="background: var(--bs-light-bg-subtle);"><strong>Visibility</strong></td>
@@ -159,7 +161,7 @@
                 { "data": "name" },
 
                 // Meals
-                {
+                /*{
                     "data": "meals",
                     "searchable": true,
                     "render": function(data, type, row) {
@@ -180,7 +182,7 @@
                         });
                         return badges;
                     }
-                },
+                },*/
 
                 // Tags
                 {
