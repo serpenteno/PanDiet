@@ -23,26 +23,26 @@ class MealProductsSerializer(serializers.ModelSerializer):
 class MealSerializer(serializers.ModelSerializer):
     products = MealProductsSerializer(many=True, source='mealproducts_set')
     tags = TagSerializer(many=True, read_only=True)
-    tags_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Tag.objects.all(),
-        many=True,
-        write_only=True,
-        source='tags'
-    )
+    #tags_ids = serializers.PrimaryKeyRelatedField(
+    #    queryset=Tag.objects.all(),
+    #    many=True,
+    #    write_only=True,
+    #    source='tags'
+    #)
 
     class Meta:
         model = Meal
-        fields = ['id', 'name', 'description', 'recipe', 'mass', 'tags', 'author', 'visibility', 'products', 'tags_ids']
+        fields = ['id', 'name', 'description', 'recipe', 'mass', 'tags', 'author', 'visibility', 'products']
         read_only_fields = ['id', 'author']
 
     def create(self, validated_data):
         # We take product data
         products_data = validated_data.pop('mealproducts_set', [])
         meal = Meal.objects.create(**validated_data)
-        tags = validated_data.pop('tags', [])
+        #tags = validated_data.pop('tags', [])
 
-        if tags is not None:
-            meal.tags.set(tags)
+        #if tags is not None:
+        #    meal.tags.set(tags)
 
         # We create entries in MealNutrients
         for product_item in products_data:
@@ -51,14 +51,15 @@ class MealSerializer(serializers.ModelSerializer):
                 product=product_item['product_id'],
                 amount=product_item['amount']
             )
+        meal.update_meal_tags()
         return meal
 
     def update(self, instance, validated_data):
         products_data = validated_data.pop('mealproducts_set', None)
-        tags = validated_data.pop('tags', None)
+        #tags = validated_data.pop('tags', None)
 
-        if tags is not None:
-            instance.tags.set(tags)
+        #if tags is not None:
+        #    instance.tags.set(tags)
 
         # Update meal
         for attr, value in validated_data.items():
@@ -74,6 +75,7 @@ class MealSerializer(serializers.ModelSerializer):
                     product=product_item['product_id'],
                     amount=product_item['amount']
                 )
+        instance.update_meal_tags()
 
         return instance
 

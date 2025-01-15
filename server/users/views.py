@@ -2,8 +2,11 @@ from django.views.generic import ListView, DetailView
 from rest_framework import viewsets, filters, generics
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.renderers import JSONRenderer
 from rest_framework_datatables.filters import DatatablesFilterBackend
 from rest_framework_datatables.pagination import DatatablesPageNumberPagination
+from rest_framework_datatables.renderers import DatatablesRenderer
+
 from .models import User, DietitianClient
 from .serializers import UserSerializer, DietitianClientSerializer
 from common.permission_classes import IsAdminOrDietitian, UsersEdit
@@ -80,6 +83,7 @@ class UserDatatablesView(generics.ListAPIView):
     API endpoint specific for User data table from JQuery (display).
     """
     serializer_class = UserSerializer
+    renderer_classes = [DatatablesRenderer, JSONRenderer]
     pagination_class = DatatablesPageNumberPagination
     filter_backends = [DatatablesFilterBackend]
     permission_classes = [IsAdminOrDietitian]

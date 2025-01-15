@@ -56,19 +56,25 @@
                                                 <select id="productsSelect" name="product-id" multiple style="width: 100%"></select>
                                             </div>
                                             <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-1" name="visibility"><label class="form-check-label text-secondary-emphasis" for="formCheck-1">Public</label></div>
+                                            <p id="totalMass" class="fw-bold">Total Mass: 0 g</p>
+                                            <p id="nutritionInfo" class="fw-bold">Nutritional Info:</p>
+                                            <div id="nutritionDetails">
+                                            </div>
                                         </div>
                                         <div class="col-4" id="rightCol" style="overflow-y: auto;">
                                             <table class="table" id="productsTable">
                                                 <thead>
-                                                <tr>
-                                                    <th>Product</th>
-                                                    <th>Amount</th>
-                                                </tr>
+                                                    <tr>
+                                                        <th>Product</th>
+                                                        <th>Amount (g)</th>
+                                                        <th>Tags</th>
+                                                    </tr>
                                                 </thead>
                                                 <tbody>
-                                                <!-- dynamic generation -->
+                                                    <!-- dynamic generation -->
                                                 </tbody>
                                             </table>
+                                            
                                         </div>
                                     </div>
                                 </form>
@@ -98,49 +104,72 @@
             };
             },
             processResults: function (data, params) {
-            // data => { count, next, previous, results: [...] } (standard DRF)
-            const results = data.results.map(item => ({
-                id: item.id.toString(),
-                text: item.name,
-                amount: item.amount
-            }));
-            let more = false;
-            if (data.next) {
-                more = true;
-            }
-            return {
-                results: results,
-                pagination: {
-                more: more
+                const results = data.results.map(item => ({
+                    id: item.id.toString(),
+                    text: item.name,
+                    mass: item.mass, // Product mass in grams
+                    tags: item.tags, // Product tags
+                    nutrients: item.nutrients // Product nutrients
+                }));
+                let more = false;
+                if (data.next) {
+                    more = true;
                 }
-            };
+                return {
+                    results: results,
+                    pagination: {
+                        more: more
+                    }
+                };
             }
         }
         });
 
         // When user selects a new product
         $('#productsSelect').on('select2:select', function(e) {
-        // e.params.data => {id, text}
-        let productId = e.params.data.id;
-        let productName = e.params.data.text;
+            let productId = e.params.data.id;
+            let productName = e.params.data.text;
+            let productMass = parseFloat(e.params.data.mass) || 0;
+            let productTags = e.params.data.tags || []; // List tags
+            let productNutrients = e.params.data.nutrients || []; // List nutrients
+            // Stringify JSON
+            let nutrientsJson = JSON.stringify(productNutrients);
 
-        // Add table row
-        let rowHtml = `
-            <tr data-product-id="${productId}">
-            <td>${productName}</td>
-            <td>
-                <input type="number" name="product-amount-${productId}" class="form-control product-amount" min="0.01" step="0.01" value="1" required>
-            </td>
-            </tr>
-        `;
-        $('#productsTable tbody').append(rowHtml);
+            // Tags to string
+            let tagsText = productTags.map(tag => tag.name).join(', ');
+
+            // Add row to column
+            let rowHtml = `
+                <tr data-product-id="${productId}" data-nutrients='${JSON.stringify(productNutrients).replace(/'/g, '&#39;')}' data-product-mass="${productMass}">
+                    <td>${productName}</td>
+                    <td>
+                        <input type="number" name="product-amount-${productId}" class="form-control product-amount" min="0.01" step="0.01" value="1" required>
+                    </td>
+                    <td>${tagsText}</td>
+                </tr>
+            `;
+            $('#productsTable tbody').append(rowHtml);
+
+            // Calculate mass and nutrients
+            calculateTotalMass();
+            calculateNutritionInfo();
         });
+
+        // When mass of product is changed
+        $('#productsTable').on('input change', '.product-amount', function() {
+            calculateTotalMass();
+            calculateNutritionInfo();
+        });
+
 
         // When user unselects a product
         $('#productsSelect').on('select2:unselect', function(e) {
         let productId = e.params.data.id;
         // Remove row from table
         $('#productsTable tbody tr[data-product-id="'+productId+'"]').remove();
+        // Calculate mass and nutrients
+        calculateTotalMass();
+        calculateNutritionInfo();
         });
 
 
@@ -339,6 +368,10 @@
         // Clear products table
         $('#productsTable tbody').empty();
 
+        // Calculate mass and nutrients
+        calculateTotalMass();
+        calculateNutritionInfo();
+
         // Reset save button to createMeal
         $('#saveMealBtn').text('Save').off('click').on('click', function() {
             createMeal();
@@ -353,6 +386,7 @@
         data.description = $('textarea[name="desc"]').val();
         data.recipe = $('textarea[name="recipe"]').val();
         data.visibility = $('#formCheck-1').is(':checked') ? 'public' : 'private';
+        data.mass = calculateTotalMass()
 
         // Collect tags
         var selectedTags = $('#tagsSelect').val() || [];
@@ -400,6 +434,7 @@
         data.description = $('textarea[name="desc"]').val();
         data.recipe = $('textarea[name="recipe"]').val();
         data.visibility = $('#formCheck-1').is(':checked') ? 'public' : 'private';
+        data.mass = calculateTotalMass()
 
         // Collect tags
         var selectedTags = $('#tagsSelect').val() || [];
@@ -441,53 +476,55 @@
     }
 
     function editMeal(mealId) {
-        // Reset modal to ensure no residual data
+        // Reset modal
         resetMealModal();
 
-        // Fetch meal data via AJAX GET
+        // download meal data with AJAX GET
         $.ajax({
             url: `/api/meals/${mealId}/`,
             method: 'GET',
             headers: { 'X-CSRFToken': '{{ csrf_token }}' },
             success: function(response) {
-                // Populate modal fields with fetched data
+                // Fill form with meal data
                 $('input[name="name"]').val(response.name);
                 $('textarea[name="desc"]').val(response.description);
                 $('textarea[name="recipe"]').val(response.recipe);
                 $('#formCheck-1').prop('checked', response.visibility === 'public');
 
-                // Set tags
-                var tags = response.tags;
-                var tags_ids = tags.map(function(tag) { return tag.id.toString(); });
-                $('#tagsSelect').val(tags_ids).trigger('change');
-
                 // Set products
                 var products = response.products;
                 products.forEach(function(item) {
                     var product = item.product;
-                    var amount = item.amount;
+                    var amount = parseFloat(item.amount) || 0;
+                    var tags = product.tags || []; // product tags - API supports it now
 
+                    let tagsText = tags.map(tag => tag.name).join(', ');
                     let rowHtml = `
-                        <tr data-product-id="${product.id}">
+                        <tr data-product-id="${product.id}" data-nutrients='${JSON.stringify(product.nutrients).replace(/'/g, '&#39;')}' data-product-mass="${product.mass}">
                             <td>${product.name}</td>
                             <td>
-                                <input type="number" name="product-amount-${product.id}" class="form-control product-amount" min="0.01" step="0.01" value="${amount}" required>
+                                <input type="number" name="product-amount-${product.id}" class="form-control product-amount" min="0.01" step="0.01" value="1" required>
                             </td>
+                            <td>${tagsText}</td>
                         </tr>
                     `;
                     $('#productsTable tbody').append(rowHtml);
                 });
 
-                // Set productsSelect to include already selected products to prevent re-selection
+                // Set select2 for fetched products
                 var selectedProducts = products.map(function(item) { return item.product.id.toString(); });
                 $('#productsSelect').val(selectedProducts).trigger('change');
 
-                // Set save button to updateMeal
+                // Calculate mass and nutrients
+                calculateTotalMass();
+                calculateNutritionInfo();
+
+                // Save button function config
                 $('#saveMealBtn').text('Update').off('click').on('click', function() {
                     updateMeal(mealId);
                 });
 
-                // Show modal
+                // Show html modal
                 $('#modal-1').modal('show');
             },
             error: function(xhr, status, error) {
@@ -496,6 +533,7 @@
             }
         });
     }
+
 
     // Handle "AddButton" click
     $('#addMealBtn').on('click', function() {
@@ -510,6 +548,56 @@
         // Show modal
         $('#modal-1').modal('show');
     });
+
+    // Calculate meal mass from added products
+    function calculateTotalMass() {
+        var total = 0;
+        $('#productsTable tbody tr').each(function() {
+            var amount = parseFloat($(this).find('.product-amount').val()) || 0;
+            total += amount;
+        });
+        $('#totalMass').text('Total Mass: ' + total.toFixed(2) + ' g');
+        return total.toFixed(2)
+    }
+
+    function calculateNutritionInfo() {
+        // Reset nutreints map
+        var nutritionMap = {};
+
+        $('#productsTable tbody tr').each(function() {
+            var productId = $(this).data('product-id');
+            var productMass = $(this).data('product-mass');
+            var amount = parseFloat($(this).find('.product-amount').val()) || 0;
+
+            // Nutrients from attributes
+            var nutrients = JSON.parse($(this).attr('data-nutrients')) || [];
+            if (!nutrients.length) return;
+
+            nutrients.forEach(function(nutrient) {
+                if (!nutritionMap[nutrient.nutrient.name]) {
+                    nutritionMap[nutrient.nutrient.name] = { amount: 0, unit: nutrient.nutrient.unit };
+                }
+                // Amount is product amount*nutrient amount divided by amount of product that is reference for nutreints in this product
+                nutritionMap[nutrient.nutrient.name].amount += (nutrient.amount * amount) / productMass;
+            });
+        });
+
+        // Make html for it
+        var nutritionHtml = '';
+        for (var nutrient in nutritionMap) {
+            if (nutritionMap.hasOwnProperty(nutrient)) {
+                var data = nutritionMap[nutrient];
+                nutritionHtml += `<div>${nutrient}: ${data.amount.toFixed(2)} ${data.unit}</div>`;
+            }
+        }
+
+        if (nutritionHtml === '') {
+            nutritionHtml = '<div>No nutritional information.</div>';
+        }
+
+        $('#nutritionDetails').html(nutritionHtml);
+    }
+
 
 </script>
 

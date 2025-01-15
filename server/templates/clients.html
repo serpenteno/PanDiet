@@ -13,6 +13,7 @@
                                 <table class="table my-0" id="clientsTable">
                                     <thead>
                                         <tr style="background: var(--bs-light-bg-subtle);">
+                                            <th style="background: var(--bs-light-bg-subtle);">id</th> <!-- Hidden -->
                                             <th style="background: var(--bs-light-bg-subtle);">Client</th>
                                             <th style="background: var(--bs-light-bg-subtle);">DietPlan</th>
                                             <th style="background: var(--bs-light-bg-subtle);">Options</th>
@@ -26,6 +27,7 @@
                                             <td style="background: var(--bs-light-bg-subtle);"><strong>Client</strong></td>
                                             <td style="background: var(--bs-light-bg-subtle);"><strong>DietPlan</strong></td>
                                             <th style="background: var(--bs-light-bg-subtle);"><strong>Options</strong></th>
+                                            <td style="background: var(--bs-light-bg-subtle);"><strong>id</strong></td> <!-- Hidden -->
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -155,7 +157,7 @@
                 {"data": "username"},
 
                 // Profile button
-                {
+                /*{
                     "data": null, // No specific data, we'll use the entire row
                     "orderable": false,
                     "searchable": false,
@@ -163,7 +165,7 @@
                         // Generate a button with a link to the clients's profile
                         return `<button className="btn btn-primary btn-sm ms-2" onclick="window.location.href='/profile/${row.id}/'">View Profile</button>`;
                     }
-                },
+                },*/
 
                 // Dietplans
                 {
